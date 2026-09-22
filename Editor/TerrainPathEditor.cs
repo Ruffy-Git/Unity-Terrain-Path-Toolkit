@@ -56,7 +56,7 @@ namespace TerrainPathToolkit.Editor
                 return;
             }
 
-            var points = PathSampling.SamplePolyline(Path);
+            var points = PathSampling.Sample(Path);
             if (Path.ConformToTerrain && Path.TargetTerrain != null)
                 PathSampling.ProjectToTerrain(points, Path.TargetTerrain, Path.VerticalOffset);
 
@@ -115,21 +115,42 @@ namespace TerrainPathToolkit.Editor
 
         private void OnSceneGUI()
         {
+            var changed = false;
+
             for (var i = 0; i < Path.ControlPoints.Count; i++)
             {
+                var point = Path.GetWorldPoint(i);
+                var size = HandleUtility.GetHandleSize(point) * 0.09f;
+
+                Handles.color = i == 0 ? new Color(0.2f, 1f, 0.3f) :
+                    i == Path.ControlPoints.Count - 1 ? new Color(1f, 0.35f, 0.2f) :
+                    new Color(0.2f, 0.7f, 1f);
+
+                Handles.SphereHandleCap(0, point, Quaternion.identity, size, EventType.Repaint);
+                Handles.Label(point + Vector3.up * size * 1.5f, "P" + i);
+
                 EditorGUI.BeginChangeCheck();
-                var next = Handles.PositionHandle(Path.GetWorldPoint(i), Quaternion.identity);
+                var next = Handles.PositionHandle(point, Quaternion.identity);
                 if (!EditorGUI.EndChangeCheck()) continue;
+
                 Undo.RecordObject(Path, "Move Terrain Path Point");
                 Path.SetWorldPoint(i, next);
                 EditorUtility.SetDirty(Path);
+                changed = true;
             }
 
-            var preview = PathSampling.SamplePolyline(Path);
+            var preview = PathSampling.Sample(Path);
             if (Path.ConformToTerrain && Path.TargetTerrain != null)
                 PathSampling.ProjectToTerrain(preview, Path.TargetTerrain, Path.VerticalOffset);
-            Handles.color = Color.white;
-            for (var i = 0; i < preview.Count - 1; i++) Handles.DrawLine(preview[i], preview[i + 1], 3f);
+
+            Handles.color = new Color(1f, 0.85f, 0.15f);
+            for (var i = 0; i < preview.Count - 1; i++)
+                Handles.DrawAAPolyLine(4f, preview[i], preview[i + 1]);
+
+            if (changed && Path.LivePreview && !HasExternalMeshEdits())
+                Generate(false);
+
+            SceneView.RepaintAll();
         }
     }
 }
