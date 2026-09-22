@@ -1,0 +1,5 @@
+{
+  "name": "TerrainPathToolkit.Runtime",
+  "rootNamespace": "TerrainPathToolkit",
+  "autoReferenced": true
+}
