@@ -13,7 +13,7 @@ namespace TerrainPathToolkit
             new Vector3(5f, 0f, 0f)
         };
         [Min(0.1f)] [SerializeField] private float width = 3f;
-        [Min(0.05f)] [SerializeField] private float sampleSpacing = 0.5f;
+        [Min(0.05f)] [SerializeField] private float sampleSpacing = 0.5f;\n        [Range(1, 32)] [SerializeField] private int widthSubdivisions = 6;
         [SerializeField] private bool smoothPath = true;
         [SerializeField] private bool livePreview = true;
         [SerializeField] private bool conformToTerrain = true;
@@ -25,7 +25,7 @@ namespace TerrainPathToolkit
 
         public IReadOnlyList<Vector3> ControlPoints => controlPoints;
         public float Width => width;
-        public float SampleSpacing => sampleSpacing;
+        public float SampleSpacing => sampleSpacing;\n        public int WidthSubdivisions => widthSubdivisions;
         public bool SmoothPath => smoothPath;
         public bool LivePreview => livePreview;
         public bool ConformToTerrain => conformToTerrain;
