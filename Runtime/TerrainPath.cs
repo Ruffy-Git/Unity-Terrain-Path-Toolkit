@@ -12,8 +12,10 @@ namespace TerrainPathToolkit
             new Vector3(-5f, 0f, 0f),
             new Vector3(5f, 0f, 0f)
         };
+
         [Min(0.1f)] [SerializeField] private float width = 3f;
-        [Min(0.05f)] [SerializeField] private float sampleSpacing = 0.5f;\n        [Range(1, 32)] [SerializeField] private int widthSubdivisions = 6;
+        [Min(0.05f)] [SerializeField] private float sampleSpacing = 0.5f;
+        [Range(1, 32)] [SerializeField] private int widthSubdivisions = 6;
         [SerializeField] private bool smoothPath = true;
         [SerializeField] private bool livePreview = true;
         [SerializeField] private bool conformToTerrain = true;
@@ -25,7 +27,8 @@ namespace TerrainPathToolkit
 
         public IReadOnlyList<Vector3> ControlPoints => controlPoints;
         public float Width => width;
-        public float SampleSpacing => sampleSpacing;\n        public int WidthSubdivisions => widthSubdivisions;
+        public float SampleSpacing => sampleSpacing;
+        public int WidthSubdivisions => widthSubdivisions;
         public bool SmoothPath => smoothPath;
         public bool LivePreview => livePreview;
         public bool ConformToTerrain => conformToTerrain;
@@ -39,6 +42,10 @@ namespace TerrainPathToolkit
         public void SetWorldPoint(int index, Vector3 worldPoint) => controlPoints[index] = transform.InverseTransformPoint(worldPoint);
         public void AddWorldPoint(Vector3 worldPoint) => controlPoints.Add(transform.InverseTransformPoint(worldPoint));
         public void InsertWorldPoint(int index, Vector3 worldPoint) => controlPoints.Insert(index, transform.InverseTransformPoint(worldPoint));
-        public void RemovePoint(int index) { if (controlPoints.Count > 2 && index >= 0 && index < controlPoints.Count) controlPoints.RemoveAt(index); }
+        public void RemovePoint(int index)
+        {
+            if (controlPoints.Count > 2 && index >= 0 && index < controlPoints.Count)
+                controlPoints.RemoveAt(index);
+        }
     }
 }
