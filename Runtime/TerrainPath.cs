@@ -16,6 +16,9 @@ namespace TerrainPathToolkit
         [Min(0.1f)] [SerializeField] private float width = 3f;
         [Min(0.05f)] [SerializeField] private float sampleSpacing = 0.5f;
         [Range(1, 32)] [SerializeField] private int widthSubdivisions = 6;
+        [SerializeField] private bool adaptiveTerrainSampling = true;
+        [Min(0.01f)] [SerializeField] private float terrainHeightTolerance = 0.08f;
+        [Range(0, 6)] [SerializeField] private int maxAdaptiveDepth = 4;
         [SerializeField] private bool smoothPath = true;
         [SerializeField] private bool livePreview = true;
         [SerializeField] private bool conformToTerrain = true;
@@ -29,6 +32,9 @@ namespace TerrainPathToolkit
         public float Width => width;
         public float SampleSpacing => sampleSpacing;
         public int WidthSubdivisions => widthSubdivisions;
+        public bool AdaptiveTerrainSampling => adaptiveTerrainSampling;
+        public float TerrainHeightTolerance => terrainHeightTolerance;
+        public int MaxAdaptiveDepth => maxAdaptiveDepth;
         public bool SmoothPath => smoothPath;
         public bool LivePreview => livePreview;
         public bool ConformToTerrain => conformToTerrain;
