@@ -140,7 +140,8 @@ namespace TerrainPathToolkit.Editor
                 Path.Width,
                 output.transform,
                 Path.ConformToTerrain ? Path.TargetTerrain : null,
-                Path.VerticalOffset);
+                Path.VerticalOffset,
+                Path.WidthSubdivisions);
             filter.sharedMesh = mesh;
             Path.BaselineFingerprint = MeshFingerprint.Calculate(mesh);
             if (oldMesh != null && oldMesh != mesh && !AssetDatabase.Contains(oldMesh)) DestroyImmediate(oldMesh);
