@@ -1,0 +1,11 @@
+{
+  "name": "com.ruffygit.terrain-path-toolkit",
+  "version": "0.1.0",
+  "displayName": "Terrain Path Toolkit",
+  "description": "Editable spline-based, terrain-conforming path authoring tools for Unity.",
+  "unity": "2022.3",
+  "keywords": ["terrain", "spline", "road", "path", "editor", "procedural"],
+  "author": {
+    "name": "Sabastian Lower"
+  }
+}
