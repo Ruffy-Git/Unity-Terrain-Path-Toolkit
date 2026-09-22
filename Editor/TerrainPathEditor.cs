@@ -76,8 +76,20 @@ namespace TerrainPathToolkit.Editor
                 Path.GeneratedObject = output;
             }
 
-            var filter = output.GetComponent<MeshFilter>() ?? Undo.AddComponent<MeshFilter>(output);
-            var renderer = output.GetComponent<MeshRenderer>() ?? Undo.AddComponent<MeshRenderer>(output);
+            var filter = output.GetComponent<MeshFilter>();
+            if (filter == null)
+            {
+                filter = output.AddComponent<MeshFilter>();
+                Undo.RegisterCreatedObjectUndo(filter, "Add Terrain Path Mesh Filter");
+            }
+
+            var renderer = output.GetComponent<MeshRenderer>();
+            if (renderer == null)
+            {
+                renderer = output.AddComponent<MeshRenderer>();
+                Undo.RegisterCreatedObjectUndo(renderer, "Add Terrain Path Mesh Renderer");
+            }
+
             if (Path.PathMaterial != null) renderer.sharedMaterial = Path.PathMaterial;
 
             var oldMesh = filter.sharedMesh;
