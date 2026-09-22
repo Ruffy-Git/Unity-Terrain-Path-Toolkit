@@ -1,0 +1,7 @@
+{
+  "name": "TerrainPathToolkit.Editor",
+  "rootNamespace": "TerrainPathToolkit.Editor",
+  "references": ["TerrainPathToolkit.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}
