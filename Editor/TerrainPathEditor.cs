@@ -9,6 +9,8 @@ namespace TerrainPathToolkit.Editor
         private TerrainPath Path => (TerrainPath)target;
         private int selectedPoint = -1;
         private bool tightTurnDetected;
+        private float[,] terrainBackup;
+        private TerrainData backedUpTerrainData;
 
         public override void OnInspectorGUI()
         {
@@ -41,6 +43,62 @@ namespace TerrainPathToolkit.Editor
 
             if (modified && GUILayout.Button("Replace Manual Edits and Regenerate"))
                 Generate(true);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Terrain Carving", EditorStyles.boldLabel);
+            using (new EditorGUI.DisabledScope(!CanCarve()))
+            {
+                if (GUILayout.Button("Preview / Apply Terrain Carve")) ApplyTerrainCarve();
+            }
+            using (new EditorGUI.DisabledScope(terrainBackup == null || backedUpTerrainData == null))
+            {
+                if (GUILayout.Button("Restore Terrain")) RestoreTerrain();
+            }
+            EditorGUILayout.HelpBox("Terrain carving changes TerrainData only when you press the carve button. Restore Terrain returns to the in-memory backup captured before the first carve in this editor session.", MessageType.Info);
+        }
+
+
+        private bool CanCarve()
+        {
+            return Path.CarveTerrain && Path.TargetTerrain != null && Path.ControlPoints.Count >= 2;
+        }
+
+        private void ApplyTerrainCarve()
+        {
+            if (!CanCarve()) return;
+            var terrain = Path.TargetTerrain;
+            var data = terrain.terrainData;
+            var resolution = data.heightmapResolution;
+
+            if (terrainBackup == null || backedUpTerrainData != data)
+            {
+                terrainBackup = data.GetHeights(0, 0, resolution, resolution);
+                backedUpTerrainData = data;
+            }
+
+            var points = PathSampling.Sample(Path);
+            PathSampling.ProjectToTerrain(points, terrain, 0f);
+            if (points.Count < 2) return;
+
+            Undo.RegisterCompleteObjectUndo(data, "Carve Terrain For Path");
+            var carved = TerrainCarver.BuildCarvedHeights(Path, points, terrainBackup);
+            data.SetHeights(0, 0, carved);
+            terrain.Flush();
+            EditorUtility.SetDirty(data);
+            Generate(false);
+        }
+
+        private void RestoreTerrain()
+        {
+            if (terrainBackup == null || backedUpTerrainData == null) return;
+            Undo.RegisterCompleteObjectUndo(backedUpTerrainData, "Restore Terrain Before Path Carve");
+            backedUpTerrainData.SetHeights(0, 0, terrainBackup);
+            var terrain = Path.TargetTerrain;
+            if (terrain != null) terrain.Flush();
+            EditorUtility.SetDirty(backedUpTerrainData);
+            terrainBackup = null;
+            backedUpTerrainData = null;
+            Generate(false);
         }
 
         private void AddPoint()
