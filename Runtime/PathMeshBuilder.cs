@@ -6,6 +6,9 @@ namespace TerrainPathToolkit
     public static class PathMeshBuilder
     {
         public static Mesh BuildStrip(IReadOnlyList<Vector3> worldPoints, float width, Transform outputSpace)
+            => BuildStrip(worldPoints, width, outputSpace, null, 0f);
+
+        public static Mesh BuildStrip(IReadOnlyList<Vector3> worldPoints, float width, Transform outputSpace, Terrain terrain, float verticalOffset)
         {
             var mesh = new Mesh { name = "Terrain Path Mesh" };
             if (worldPoints == null || worldPoints.Count < 2 || outputSpace == null) return mesh;
@@ -19,14 +22,27 @@ namespace TerrainPathToolkit
             for (var i = 0; i < worldPoints.Count; i++)
             {
                 var tangent = CalculateTangent(worldPoints, i);
+                tangent.y = 0f;
+                if (tangent.sqrMagnitude < 0.0001f) tangent = Vector3.forward;
+                tangent.Normalize();
+
                 var side = Vector3.Cross(Vector3.up, tangent);
                 if (side.sqrMagnitude < 0.0001f) side = lastSide;
                 else side.Normalize();
                 lastSide = side;
 
                 var halfWidth = width * 0.5f;
-                vertices[i * 2] = outputSpace.InverseTransformPoint(worldPoints[i] - side * halfWidth);
-                vertices[i * 2 + 1] = outputSpace.InverseTransformPoint(worldPoints[i] + side * halfWidth);
+                var left = worldPoints[i] - side * halfWidth;
+                var right = worldPoints[i] + side * halfWidth;
+
+                if (terrain != null)
+                {
+                    left = ProjectVertexToTerrain(left, terrain, verticalOffset);
+                    right = ProjectVertexToTerrain(right, terrain, verticalOffset);
+                }
+
+                vertices[i * 2] = outputSpace.InverseTransformPoint(left);
+                vertices[i * 2 + 1] = outputSpace.InverseTransformPoint(right);
 
                 if (i > 0) distance += Vector3.Distance(worldPoints[i - 1], worldPoints[i]);
                 uvs[i * 2] = new Vector2(0f, distance);
@@ -43,8 +59,20 @@ namespace TerrainPathToolkit
             mesh.uv = uvs;
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
             mesh.RecalculateBounds();
             return mesh;
+        }
+
+        private static Vector3 ProjectVertexToTerrain(Vector3 point, Terrain terrain, float verticalOffset)
+        {
+            var origin = terrain.transform.position;
+            var data = terrain.terrainData;
+            var localX = point.x - origin.x;
+            var localZ = point.z - origin.z;
+            if (localX < 0f || localZ < 0f || localX > data.size.x || localZ > data.size.z) return point;
+            point.y = terrain.SampleHeight(point) + origin.y + verticalOffset;
+            return point;
         }
 
         private static Vector3 CalculateTangent(IReadOnlyList<Vector3> points, int index)
