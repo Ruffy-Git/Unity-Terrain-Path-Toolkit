@@ -24,6 +24,12 @@ namespace TerrainPathToolkit
         [SerializeField] private bool conformToTerrain = true;
         [SerializeField] private Terrain terrain;
         [SerializeField] private float verticalOffset = 0.02f;
+
+        [Header("Terrain Carving")]
+        [SerializeField] private bool carveTerrain = false;
+        [Min(0f)] [SerializeField] private float carveExtraWidth = 0.5f;
+        [Min(0.01f)] [SerializeField] private float carveBlendWidth = 3f;
+        [Range(0f, 1f)] [SerializeField] private float carveStrength = 1f;
         [SerializeField] private Material material;
         [SerializeField, HideInInspector] private GameObject generatedObject;
         [SerializeField, HideInInspector] private string baselineFingerprint;
@@ -40,6 +46,10 @@ namespace TerrainPathToolkit
         public bool ConformToTerrain => conformToTerrain;
         public Terrain TargetTerrain => terrain;
         public float VerticalOffset => verticalOffset;
+        public bool CarveTerrain => carveTerrain;
+        public float CarveExtraWidth => carveExtraWidth;
+        public float CarveBlendWidth => carveBlendWidth;
+        public float CarveStrength => carveStrength;
         public Material PathMaterial => material;
         public GameObject GeneratedObject { get => generatedObject; set => generatedObject = value; }
         public string BaselineFingerprint { get => baselineFingerprint; set => baselineFingerprint = value; }
