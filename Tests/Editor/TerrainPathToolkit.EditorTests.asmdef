@@ -1,0 +1,7 @@
+{
+  "name": "TerrainPathToolkit.EditorTests",
+  "references": ["TerrainPathToolkit.Runtime"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}
