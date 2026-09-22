@@ -135,7 +135,7 @@ namespace TerrainPathToolkit.Editor
             if (Path.PathMaterial != null) renderer.sharedMaterial = Path.PathMaterial;
 
             var oldMesh = filter.sharedMesh;
-            var mesh = PathMeshBuilder.BuildStrip(points, Path.Width, output.transform);
+            var mesh = PathMeshBuilder.BuildStrip(points, Path.Width, output.transform,\n                Path.ConformToTerrain ? Path.TargetTerrain : null, Path.VerticalOffset);
             filter.sharedMesh = mesh;
             Path.BaselineFingerprint = MeshFingerprint.Calculate(mesh);
             if (oldMesh != null && oldMesh != mesh && !AssetDatabase.Contains(oldMesh)) DestroyImmediate(oldMesh);
